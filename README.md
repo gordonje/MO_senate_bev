@@ -9,11 +9,11 @@ This is a web scraping and data presentation project for one of my journalism cl
 Dependencies
 ------------
 
-* [Python 2.x]
+* Python 2.x
+* sqlite3
 * [BeautifulSoup4](http://www.crummy.com/software/BeautifulSoup/ "BeautifulSoup4")
 * [lxml parser](http://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-a-parser "lxml parser")
 * [Requests](http://docs.python-requests.org/en/latest/ "Requests")
-* sqlite3
 
 Scrapers
 --------
