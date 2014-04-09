@@ -47,3 +47,5 @@ from bills_actions
 group by bill_year, bill_type, bill_number) as b
 on a.rowid = b.last
 ```
+
+Note this query assumes that the order in which the actions were inserted is roughly earliest to most recent (at least for any given bill), which is exactly how both of the scripts are working.
