@@ -55,3 +55,4 @@ docs/_build/
 # Added by JG
 *pyc
 MO_senate_bev/Archive/*
+.DS_Store
