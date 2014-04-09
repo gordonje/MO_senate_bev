@@ -32,9 +32,9 @@ c.execute('''CREATE TABLE bills (
 	sponsor VARCHAR(20),
 	lr_number VARCHAR(50),
 	committee VARCHAR(20),
-	## Decided not to collect last action on the bill records because I figured out how to query the database for it, which is easier than figuring out how to keep it up-to-date
-	# last_action_date DATE,
-	# last_action_desc TEXT,
+	-- Decided not to collect last action on the bill records because I figured out how to query the database for it, which is easier than figuring out how to keep it up-to-date
+	-- last_action_date DATE,
+	-- last_action_desc TEXT,
 	effective_date VARCHAR(24),
 	summary TEXT,
 	PRIMARY KEY (bill_year, bill_type, bill_number)
@@ -109,13 +109,14 @@ for i in all_bills:
 		bill_info['sponsor'],
 		bill_info['lr_number'],
 		bill_info['committee'],
-		bill_info['last_action_date'],
-		bill_info['last_action_desc'],
 		bill_info['effective_date'],
 		bill_info['summary']
+## Decided not to collect last action on the bill records because I figured out how to query the database for it, which is easier than figuring out how to keep it up-to-date
+		# bill_info['last_action_date'],
+		# bill_info['last_action_desc'],
 	]
 
-	c.execute('INSERT INTO bills VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', bill_output)
+	c.execute('INSERT INTO bills VALUES (?,?,?,?,?,?,?,?,?,?)', bill_output)
 	conn.commit()
 
 ########## Getting actions ##########
