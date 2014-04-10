@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import date, timedelta
 from bs4 import BeautifulSoup
 
 
@@ -76,10 +76,13 @@ def get_all_bill_actions (bill, requests_session):
 	for tr in div.findAll("tr"):
 
 		date_td = tr.findChild('td')
-		action_date = datetime(int(date_td.text.split('/')[2]), int(date_td.text.split('/')[0]), int(date_td.text.split('/')[1]))
+		action_date = date(int(date_td.text.split('/')[2]), int(date_td.text.split('/')[0]), int(date_td.text.split('/')[1]))
 
 		# excluding actions that haven't yet to occur
-		if action_date < datetime.now():
+
+		tomorrow = date.today() + timedelta(days=1)
+
+		if action_date < tomorrow:
 
 			description = date_td.findNextSibling('td')
 
@@ -87,7 +90,7 @@ def get_all_bill_actions (bill, requests_session):
 				bill['bill_year'], 
 				bill['bill_type'], 
 				bill['bill_number'],
-				str(action_date.year) + '-' + str(action_date.month) + '-' + str(action_date.day),
+				str(action_date),
 				description.text.encode('utf-8')
 				]
 

@@ -7,11 +7,7 @@ c = conn.cursor()
 
 now = date.today()
 
-bills_to_delete = [
-	['SR', '1749'],
-  	['SR', '1712'],
-  	['SCR', '41']
-  	]
+bills_to_delete = []
 
 for i in c.execute('''SELECT bill_type, bill_number FROM bills ORDER BY url_id DESC LIMIT 3'''):
 	bills_to_delete.append([str(i[0]), str(i[1])])
@@ -40,9 +36,9 @@ count_actions_deleted = 0
 for i in c.execute('''SELECT count(*) FROM bills_actions WHERE date(action_date) > date(?)''', [three_days_ago]):
 	count_actions_deleted += int(i[0])
 
-c.execute('''DELETE FROM bills_actions WHERE date(action_date) > date(?)''', [three_days_ago])
+c.execute('''DELETE FROM bills_actions WHERE action_date > ?''', [three_days_ago])
 conn.commit()
 
-print 'Also deleted all bills_actions after ' + three_days_ago + '(' + str(count_actions_deleted) + 'records).'
+print 'Also deleted all bills_actions after ' + three_days_ago + ' (' + str(count_actions_deleted) + ' records).'
 
 conn.close()

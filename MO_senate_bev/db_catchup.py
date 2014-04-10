@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from time import sleep
 import requests
 import scrapers
@@ -113,19 +113,19 @@ print "Checking for new actions on old bills..."
 
 date_from_db = ''
 
-for i in c.execute('SELECT action_date FROM bills_actions ORDER BY action_date DESC LIMIT 1'):
+for i in c.execute('SELECT action_date FROM bills_actions ORDER BY date(action_date) DESC LIMIT 1'):
 	date_from_db = date_from_db + i[0]
 
-date_from_db = datetime(int(date_from_db.split('-')[0]), int(date_from_db.split('-')[1]), int(date_from_db.split('-')[2]))
+date_from_db = date(int(date_from_db.split('-')[0]), int(date_from_db.split('-')[1]), int(date_from_db.split('-')[2]))
 
 response = session.get('http://www.senate.mo.gov/' + str(current_year).lstrip("20") + 'info/BTS_Web/ActionDates.aspx?SessionType=R')
 soup = BeautifulSoup(response.content)
 
 dates_to_request = []
 
-## Thought I need to check what the current date was listed on this page. Turns out I don't (I think)
+## Thought I need to check what the current date was listed on this page. Turns out I don't (I think) because seems to always show up in the lower tbale anyway
 # current_date_string = soup.find('a', id = 'hlCurrentAction').text.lstrip("Most Current Action - ")
-# current_date = datetime(int(current_date_string.split('/')[2]), int(current_date_string.split('/')[0]), int(current_date_string.split('/')[1]))
+# current_date = date(int(current_date_string.split('/')[2]), int(current_date_string.split('/')[0]), int(current_date_string.split('/')[1]))
 
 # if current_date > date_from_db:
 # 	dates_to_request.append(current_date_string)
@@ -134,7 +134,7 @@ action_dates_dl = soup.find('table', id = 'dlActionDates')
 
 for td in action_dates_dl.findAll('a'):
 	action_date_string = td.text
-	action_date = datetime(int(action_date_string.split('/')[2]), int(action_date_string.split('/')[0]), int(action_date_string.split('/')[1]))
+	action_date = date(int(action_date_string.split('/')[2]), int(action_date_string.split('/')[0]), int(action_date_string.split('/')[1]))
 	if action_date > date_from_db:
 		dates_to_request.append(action_date_string)
 
@@ -166,13 +166,20 @@ if len(dates_to_request) > 0:
 					# I have to do this sort of weird thing because <dd> tags sometimes are enclosed in adjacent tags
 					desc_text = dd.text.lstrip(i + ' --  ').split(i + ' -- ')
 					for j in desc_text:
-						action_to_save = [current_year, bill_type, bill_number, i.split("/")[2] + '-' + i.split("/")[0] + '-' + i.split("/")[1], j]
+						action_to_save = [
+							current_year, 
+							bill_type, 
+							bill_number, 
+							date(int(i.split("/")[2]) + '-' + int(i.split("/")[0]) + '-' + int(i.split("/")[1])), 
+							j
+							]
 						actions_to_save.append(action_to_save)
 
 		c.executemany('INSERT INTO bills_actions VALUES (?,?,?,?,?)', actions_to_save)
 		conn.commit()
-else:
-	print "Already up-to-date."
+		
+	else:
+		print "Already up-to-date."
 
 ########## Finishing ##########
 
