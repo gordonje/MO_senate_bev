@@ -56,3 +56,4 @@ docs/_build/
 *pyc
 MO_senate_bev/Archive/*
 .DS_Store
+/notes
