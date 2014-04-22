@@ -152,3 +152,43 @@ def get_bill_topics (year, requests_session):
 
 	return bills_topics
 
+def get_senators (year, requests_session):
+
+####### Gets info about the given years senators, including the name, party and district #######
+
+	response = requests_session.get('http://www.senate.mo.gov/' + str(year).lstrip("20") + 'info/senateroster.htm')
+
+	soup = BeautifulSoup(response.content)
+
+	outer = soup.find('td', attrs = {'valign':"top", 'width': "49%"})
+	
+	inner = outer.find('table', attrs = {'border':"0", 'width':"90%"})
+
+	senators = []
+
+	for tr in inner.findAll('tr')[1:]:
+
+		raw_senator = []
+
+		for td in tr.findAll('td')[:2]:
+
+			raw_senator.append(td.text.strip())
+
+		name = raw_senator.pop(0)
+
+		if name == 'Vacant':
+			pass
+		else:
+			senator = [year]
+
+			senator.append(name.split(" ")[0])
+			senator.append(name.split(" ")[1])
+
+			party_district = raw_senator.pop(-1).split('-')
+
+			senator.append(party_district[0])
+			senator.append(int(party_district[1]))
+
+			senators.append(senator)
+
+	return senators

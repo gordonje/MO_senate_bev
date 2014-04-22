@@ -66,6 +66,14 @@ c.execute('''CREATE TABLE bills_topics (
 	FOREIGN KEY(bill_year, bill_type, bill_number) REFERENCES bills (bill_year, bill_type, bill_number)
 	)''')
 
+c.execute('''CREATE TABLE senators (
+	leg_year INTEGER NOT NULL,
+	first_name VARCHAR(30) NOT NULL,
+	last_name VARCHAR(60) NOT NULL,
+	party VARCHAR(1) NOT NULL,
+	district INTEGER NOT NULL
+	)''')
+
 conn.commit()
 
 ########## Gathering bill ids ##########
@@ -166,6 +174,15 @@ if current_year % 2 == 0:
 		topics_output.append(i)
 	
 c.executemany('INSERT INTO bills_topics VALUES (?,?,?,?)', topics_output)
+conn.commit()
+
+########## Getting bill senators ##########
+
+print "Getting senators..."
+
+senators_output = scrapers.get_senators(current_year, session)
+
+c.executemany('INSERT INTO senators VALUES (?,?,?,?,?)', senators_output)
 conn.commit()
 
 ########## Finishing ##########
